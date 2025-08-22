@@ -4,7 +4,8 @@ project(MobileFarm VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
+
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -26,6 +27,16 @@ qt_add_qml_module(appMobileFarm
     SOURCES
         devicescanner.cpp
         devicescanner.h
+        SOURCES adbrunner.h adbrunner.cpp
+)
+
+# --- 复制 third_party 到 .app/Contents/MacOS ---
+set(THIRD_PARTY_DIR "${CMAKE_SOURCE_DIR}/third_party")
+add_custom_command(TARGET appMobileFarm POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory
+            "${THIRD_PARTY_DIR}"
+            "$<TARGET_FILE_DIR:appMobileFarm>/third_party"
+    VERBATIM
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -41,6 +52,8 @@ set_target_properties(appMobileFarm PROPERTIES
 
 target_link_libraries(appMobileFarm
     PRIVATE Qt6::Quick
+    PRIVATE Qt6::QuickControls2
+
 )
 
 include(GNUInstallDirs)

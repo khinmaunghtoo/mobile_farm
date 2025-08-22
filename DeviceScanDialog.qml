@@ -13,6 +13,7 @@ Dialog {
 
     anchors.centerIn: parent
 
+
     header: Item {
         height: 50
         RowLayout {
@@ -24,12 +25,22 @@ Dialog {
                 font.pixelSize: 16
                 Layout.fillWidth: true
             }
+
+            BusyIndicator {
+                visible: deviceScanner.isScanning
+                running: deviceScanner.isScanning
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+            }
+
+            // Scan Button
             Button {
-                text: qsTr("Scan")
+                text: deviceScanner.isScanning ? qsTr("Scanning...") : qsTr("Scan")
                 background: Rectangle {
                     radius: 6
                     color: "grey"
                 }
+                enabled: !deviceScanner.isScanning
                 onClicked: {
                     deviceScanner.scan();
                 }
@@ -102,9 +113,5 @@ Dialog {
 
     DeviceScanner {
         id: deviceScanner
-        onScanCompleted: {
-            console.log("Scan completed");
-            // Handle scan results here
-        }
     }
 }

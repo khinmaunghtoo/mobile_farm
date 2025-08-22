@@ -6,6 +6,13 @@ DeviceScanner::DeviceScanner(QObject *parent)
 
 
 void DeviceScanner::scan() {
-    qDebug("Scanning for devices...");
-}
+    qDebug("start scanning devices...");
+    setIsScanning(true);
 
+    auto devices = ADBRunner::scanDevices();
+    setDevices(devices);
+
+
+    setIsScanning(false);
+
+}

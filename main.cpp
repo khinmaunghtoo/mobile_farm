@@ -1,14 +1,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "devicescanner.h"
+#include <QQuickStyle>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
+    QQuickStyle::setStyle("Fusion");   // 强制使用 Fusion 风格
 
-    // Register types
-    qmlRegisterType<DeviceScanner>("MobileFarm",1,0,"DeviceScanner");
 
     QObject::connect(
         &engine,
