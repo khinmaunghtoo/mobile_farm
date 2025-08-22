@@ -109,6 +109,7 @@ Dialog {
             margins: 12
         }
 
+        // no devices found label
         Label {
             anchors.centerIn: parent
             text: qsTr("No devices found")
@@ -117,7 +118,7 @@ Dialog {
             font.italic: true
         }
 
-
+        // Device List
         ListView {
             id: deviceListView
             anchors.fill: parent
@@ -133,6 +134,10 @@ Dialog {
                     if (!checked) {
                         dontEffectAllCheckBox = true;
                         deviceScanDialog.selectAll = false;
+                        // remove device from selectedDevices
+                        selectedDevices = selectedDevices.filter(function(value) {
+                            return value !== modelData;
+                        });
                     }
                 }
                 text: modelData
