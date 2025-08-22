@@ -24,10 +24,12 @@ qt_add_qml_module(appMobileFarm
     QML_FILES
         Main.qml
         DeviceScanDialog.qml
+
     SOURCES
         devicescanner.cpp
         devicescanner.h
-        SOURCES adbrunner.h adbrunner.cpp
+        adbrunner.h 
+        adbrunner.cpp
 )
 
 # --- 复制 third_party 到 .app/Contents/MacOS ---
