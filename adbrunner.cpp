@@ -24,8 +24,14 @@ QString ADBRunner::adbPath() {
 }
 
 
-QStringList ADBRunner::scanDevices() {
+QStringList ADBRunner::scanDevices() noexcept(false) {
     QString output = executeADBCommand({"devices"});
+
+    // check if output contains error, if so, throw exceptio
+    if (output.contains("error")) {
+        throw std::runtime_error(output.toStdString());
+    }
+
     return parseDeviceList(output);
 }
 

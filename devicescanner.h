@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QTimer>
 #include "adbrunner.h"
+#include <QTConcurrent/QtConcurrent>
 
 
 /*
@@ -36,9 +37,10 @@ public:
     // devices getter & setter
     QStringList devices() const { return m_devices; }
     void setDevices(const QStringList &devices) {
-        if (m_devices == devices)
+        if (m_devices == devices && !devices.isEmpty())
             return;
         m_devices = devices;
+        qDebug() << "Devices updated:" << m_devices;
         emit devicesChanged();
     }
 
@@ -55,6 +57,7 @@ public slots:
 signals:
     void isScanningChanged();
     void devicesChanged();
+    void error(const QString &message);
 
 };
 

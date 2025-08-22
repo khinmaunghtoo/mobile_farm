@@ -6,13 +6,36 @@ import MobileFarm 1.0
 // Scan Devices Dialog
 Dialog {
     id: deviceScanDialog
+
+    // properties
+    property bool selectAll: false
+    property bool dontEffectAllCheckBox: false
+    property var selectedDevices: []
+
+    onSelectAllChanged: {
+        if (dontEffectAllCheckBox) { return }
+        for (var i = 0; i < deviceListView.count; i++) {
+            var item = deviceListView.itemAtIndex(i);
+            if (item) {
+                item.checked = selectAll;
+                if (selectAll) {
+                    selectedDevices.push(item.text);
+                } else {
+                    selectedDevices = [];
+                }
+            }
+        }
+    }
+
+    onOpened: {
+        deviceScanner.scan();
+    }
     title: qsTr("Scan Devices")
     width: 450
     height: 350
     modal: true
 
     anchors.centerIn: parent
-
 
     header: Item {
         height: 50
@@ -35,7 +58,7 @@ Dialog {
 
             // Scan Button
             Button {
-                text: deviceScanner.isScanning ? qsTr("Scanning...") : qsTr("Scan")
+                text: qsTr("Scan")
                 background: Rectangle {
                     radius: 6
                     color: "grey"
@@ -54,23 +77,65 @@ Dialog {
         color: "grey"
     }
 
-    // Content area with margin
+    // Select All Check Box
     Item {
-        anchors.fill: parent
-        anchors.margins: 12
+        width: parent.width
+        height: selectAllCheckBox.visible ? selectAllCheckBox.implicitHeight : 0
+        
+        CheckBox {
+            id: selectAllCheckBox
+            leftPadding: 20
+            topPadding: 12
+            bottomPadding: 12
+            visible: deviceScanner.devices.length > 1
+            checked: deviceScanDialog.selectAll
+            onCheckedChanged: {
+                console.log("Select All check box trigger:", checked);
+                deviceScanDialog.dontEffectAllCheckBox = false;
+                deviceScanDialog.selectAll = checked;
+            }
+            text: "Select All"
+        }
+    }
 
-        // Add your dialog content here
-        Rectangle {
+    // body
+    Item {
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+            bottom: parent.bottom
+            topMargin: selectAllCheckBox.visible ? selectAllCheckBox.height : 0
+            margins: 12
+        }
+
+        Label {
+            anchors.centerIn: parent
+            text: qsTr("No devices found")
+            visible: deviceScanner.devices.length === 0
+            color: "gray"
+            font.italic: true
+        }
+
+
+        ListView {
+            id: deviceListView
             anchors.fill: parent
-            color: "transparent"
-            border.color: "#333"
-            border.width: 1
-            radius: 4
-
-            Text {
-                anchors.centerIn: parent
-                text: "Dialog content area"
-                color: "#666"
+            anchors.leftMargin: 12
+            model: deviceScanner.devices
+            clip: true
+            spacing: 5
+            delegate: CheckBox {
+                checked: false
+                onCheckedChanged: {
+                    // TODO: handle device selection
+                    // if !checked, selectAll should be false, but, when selectAll change to false , should not effect other checkboxes.
+                    if (!checked) {
+                        dontEffectAllCheckBox = true;
+                        deviceScanDialog.selectAll = false;
+                    }
+                }
+                text: modelData
             }
         }
     }
@@ -82,20 +147,21 @@ Dialog {
             anchors.fill: parent
             anchors.margins: 12
 
-            // Add Devices Button
+            // Connect Devices Button
             Button {
-                text: qsTr("Add Devices")
+                text: qsTr("Connect Devices")
                 background: Rectangle {
                     radius: 6
                     color: "green"
                 }
                 onClicked: {
-                    console.log("Add Devices clicked");
                 }
             }
 
             // Spacer
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             // Close Button
             Button {
@@ -105,13 +171,32 @@ Dialog {
                     color: "grey"
                 }
                 onClicked: {
-                    console.log("Close clicked");
+                    deviceScanDialog.close();
                 }
             }
         }
     }
 
+    // error dialog
+    Dialog {
+        id: errorDialog
+        title: qsTr("Error")
+        property string text: ""
+        modal: true
+        anchors.centerIn: parent
+        standardButtons: Dialog.Ok
+        contentItem: Text {
+            text: errorDialog.text
+            color: "white"
+            wrapMode: Text.WordWrap
+        }
+    }
+
     DeviceScanner {
         id: deviceScanner
+        onError: function (message) {
+            errorDialog.text = message;
+            errorDialog.open();
+        }
     }
 }
