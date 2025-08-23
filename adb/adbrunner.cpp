@@ -4,10 +4,10 @@
 #include <qprocess.h>
 
 
-ADBRunner::ADBRunner(QObject* parent) 
-{}
+QStringList parseDeviceList(const QString &output);
 
-QString ADBRunner::adbPath() const {
+
+QString ADBRunner::adbPath() {
     QString base = QCoreApplication::applicationDirPath();
     QString path;
 
@@ -24,7 +24,7 @@ QString ADBRunner::adbPath() const {
     return path;
 }
 
-QString ADBRunner::scrcpyServerPath() const {
+QString ADBRunner::scrcpyServerPath() {
     QString base = QCoreApplication::applicationDirPath();
     return QDir(base).filePath("third_party/scrcpy-server");
 }

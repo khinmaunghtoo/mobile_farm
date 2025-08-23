@@ -1,9 +1,8 @@
 #ifndef DEVICEMANAGER_H
 #define DEVICEMANAGER_H
 
-#include <QObject>
-#include <QQmlEngine>
 #include "device.h"
+#include <QList>
 
 /*
  * DeviceManager
@@ -14,8 +13,6 @@
  */
 class DeviceManager
 {
-    Q_OBJECT
-    QML_ELEMENT
 private:
     // devices
     QList<Device*> devices;

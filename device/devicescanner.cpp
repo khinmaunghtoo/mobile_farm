@@ -1,9 +1,10 @@
 #include "devicescanner.h"
 
-DeviceScanner::DeviceScanner(QObject *parent)
-    : QObject(parent) {
-}
 
+DeviceScanner::DeviceScanner(QObject *parent)
+    : QObject(parent)
+{
+}
 
 void DeviceScanner::scan() noexcept(false) {
     qDebug("start scanning devices...");
@@ -11,7 +12,7 @@ void DeviceScanner::scan() noexcept(false) {
 
     QThreadPool::globalInstance()->start([this] {
         try {
-            auto devices = ADBRunner::instance().scanDevices();
+            auto devices = ADBRunner::scanDevices();
             QMetaObject::invokeMethod(this, [this, devices]{
                 setDevices(devices);
                 setIsScanning(false);

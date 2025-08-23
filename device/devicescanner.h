@@ -2,11 +2,9 @@
 #define DEVICESCANNER_H
 
 #include <QObject>
-#include <qqml.h>
-#include <QThread>
-#include <QTimer>
-#include "adbrunner.h"
-#include <QTConcurrent/QtConcurrent>
+#include <QtQml/qqmlregistration.h>   // 用这个头
+#include <QThreadPool>
+#include "adb/adbrunner.h"
 
 
 /*

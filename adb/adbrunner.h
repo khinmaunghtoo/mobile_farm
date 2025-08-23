@@ -5,61 +5,44 @@
 #include <QStringList>
 #include <QProcess>
 #include <QRegularExpression>
-#include <QMutex>
-#include <memory>
 
-class ADBRunner
+
+/*
+ * ADBRunner responsible for running ADB commands.
+*/
+class ADBRunner final
 {
-    Q_OBJECT
 public:
-    // Delete copy constructor and assignment operator
-    ADBRunner(const ADBRunner&) = delete;
-    ADBRunner& operator=(const ADBRunner&) = delete;
+    ADBRunner() = delete;
+    ~ADBRunner() = delete;
 
-    // Get singleton instance
-    static ADBRunner& instance() {
-        static std::unique_ptr<ADBRunner> instance;
-        static QMutex mutex;
-        QMutexLocker locker(&mutex);
-        if (!instance) {
-            instance.reset(new ADBRunner());
-        }
-        return *instance.get();
-    }
 
     // Get ADB path
-    QString adbPath() const;
+    static QString adbPath();
 
     // Get scrcpy-server file path
-    QString scrcpyServerPath() const;
+    static QString scrcpyServerPath();
 
     // Scan for connected devices
-    QStringList scanDevices();
+    static QStringList scanDevices();
 
     // Push file to device
-    bool push(const QString& serial, const QString& localPath, const QString& remotePath);
+    static bool push(const QString& serial, const QString& localPath, const QString& remotePath);
 
     // reverse
-    void reverse(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+    static void reverse(const QString &serial, const QString &deviceSocketName, quint16 localPort);
 
     // forward
-    void forward(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+    static void forward(const QString &serial, const QString &deviceSocketName, quint16 localPort);
 
     // start scrcpy
-    void startScrcpyServer(const QString &serial);
+    static void startScrcpyServer(const QString &serial);
 
 
 private:
-    explicit ADBRunner(QObject* parent = nullptr);
-    ~ADBRunner() = default;
-
     // Execute ADB command
-    QString executeADBCommand(const QStringList& args);
+    static QString executeADBCommand(const QStringList& args);
 
-    // Parse device list from ADB output
-    static QStringList parseDeviceList(const QString& output);
-
-    QMutex m_mutex;  // For thread safety
 };
 
 #endif // ADBRUNNER_H
