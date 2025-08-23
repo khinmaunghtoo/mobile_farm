@@ -11,7 +11,7 @@ void DeviceScanner::scan() noexcept(false) {
 
     QThreadPool::globalInstance()->start([this] {
         try {
-            auto devices = ADBRunner::scanDevices();
+            auto devices = ADBRunner::instance().scanDevices();
             QMetaObject::invokeMethod(this, [this, devices]{
                 setDevices(devices);
                 setIsScanning(false);

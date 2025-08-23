@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -14,22 +18,35 @@ qt_add_executable(appMobileFarm
 )
 
 source_group("QML Files" FILES
-    Main.qml
-    DeviceScanDialog.qml
+    qml/Main.qml
+    qml/DeviceScanDialog.qml
 )
 
 qt_add_qml_module(appMobileFarm
     URI MobileFarm
     VERSION 1.0
     QML_FILES
-        Main.qml
-        DeviceScanDialog.qml
+        qml/Main.qml
+        qml/DeviceScanDialog.qml
 
     SOURCES
-        devicescanner.cpp
-        devicescanner.h
-        adbrunner.h 
-        adbrunner.cpp
+        # device
+        device/devicescanner.cpp
+        device/devicescanner.h
+        device/devicemanager.h 
+        device/devicemanager.cpp
+        device/device.h 
+        device/device.cpp
+
+        # scrcpy
+        scrcpy/scrcpysession.h 
+        scrcpy/scrcpysession.cpp
+        scrcpy/scrcpyservice.h 
+        scrcpy/scrcpyservice.cpp
+
+        # adb
+        adb/adbrunner.h 
+        adb/adbrunner.cpp
 )
 
 # --- 复制 third_party 到 .app/Contents/MacOS ---
@@ -57,6 +74,10 @@ target_link_libraries(appMobileFarm
     PRIVATE Qt6::QuickControls2
 
 )
+target_link_libraries(appMobileFarm PRIVATE Qt6::Core)
+target_link_libraries(appMobileFarm PRIVATE Qt6::Core)
+target_link_libraries(appMobileFarm PRIVATE Qt6::Core)
+target_link_libraries(appMobileFarm PRIVATE Qt6::Core)
 
 include(GNUInstallDirs)
 install(TARGETS appMobileFarm
