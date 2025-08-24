@@ -27,8 +27,8 @@ qt_add_qml_module(appMobileFarm
     URI MobileFarm
     VERSION 1.0
     QML_FILES
-        Main.qml
-        DeviceScanDialog.qml
+        src/qml/Main.qml
+        src/qml/DeviceScanDialog.qml
     SOURCES
         src/device/devicescanner.h
         src/device/devicescanner.cpp

@@ -7,8 +7,8 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // 注意：路径应该是 qrc:/MobileFarm/Main.qml
-    const QUrl url(QStringLiteral("qrc:/MobileFarm/Main.qml"));
+    // 注意：路径应该是 qrc:/MobileFarm/src/qml/Main.qml
+    const QUrl url(QStringLiteral("qrc:/MobileFarm/src/qml/Main.qml"));
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,
                      &app, []() { QCoreApplication::exit(-1); },
