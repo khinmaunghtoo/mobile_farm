@@ -76,6 +76,7 @@
         "chrono": "cpp",
         "numeric": "cpp",
         "format": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "qdir": "cpp"
     }
 }

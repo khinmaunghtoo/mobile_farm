@@ -32,7 +32,7 @@ void Device::startScrcpySession() {
     connect(m_scrcpySession, &ScrcpySession::stopped, this, &Device::handleScrcpySessionStopped);
 
     // start scrcpy session
-    m_scrcpySession->startServer();
+    m_scrcpySession->start();
     emit runningChanged();
 
     qDebug() << "Scrcpy started for device:" << m_serial;
@@ -43,10 +43,27 @@ void Device::stopScrcpySession() {
     if (!m_scrcpySession) {
         return;
     }
-    m_scrcpySession->stopServer();
+    m_scrcpySession->stop();
     delete m_scrcpySession;
     m_scrcpySession = nullptr;
     emit runningChanged();
 
     qDebug() << "Scrcpy stopped for device:" << m_serial;
+}
+
+
+// handle scrcpy session output
+void Device::handleScrcpySessionOutput(const QByteArray& data) {
+    qDebug() << "Scrcpy output for device:" << m_serial << "\n" << data;
+}
+
+// handle scrcpy session stopped
+void Device::handleScrcpySessionStopped(int exitCode, QProcess::ExitStatus st) {
+    Q_UNUSED(exitCode);
+    Q_UNUSED(st);
+    if (m_scrcpySession) {
+        delete m_scrcpySession;
+        m_scrcpySession = nullptr;
+        emit runningChanged();
+    }
 }

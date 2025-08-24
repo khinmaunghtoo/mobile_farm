@@ -36,6 +36,7 @@ private slots:
 
 signals:
     void runningChanged();
+    void scrcpyError(const QString& error);
 };
 
 #endif // DEVICE_H

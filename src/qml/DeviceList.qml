@@ -47,7 +47,7 @@ Rectangle {
                 height: 20
                 background: Rectangle {
                     radius: 4
-                    color: device.running ? "#4CAF50" : "#f44336"
+                    color: device.running ? "#f44336" : "#4CAF50"
                 }
                 onClicked: {
                     console.log("Play device:", device.serial);
