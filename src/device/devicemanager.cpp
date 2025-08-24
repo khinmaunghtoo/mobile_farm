@@ -2,7 +2,7 @@
 
 DeviceManager::DeviceManager(QObject *parent) : QObject(parent) {}
 
-
+// add devices
 void DeviceManager::addDevices(QStringList deviceSerials) {
     for (const QString &deviceSerial : deviceSerials) {
         Device *device = new Device(this, deviceSerial);

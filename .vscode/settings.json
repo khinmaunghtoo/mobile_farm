@@ -70,6 +70,12 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "qobject": "cpp",
-        "qquickstyle": "cpp"
+        "qquickstyle": "cpp",
+        "qprocess": "cpp",
+        "atomic": "cpp",
+        "chrono": "cpp",
+        "numeric": "cpp",
+        "format": "cpp",
+        "span": "cpp"
     }
 }

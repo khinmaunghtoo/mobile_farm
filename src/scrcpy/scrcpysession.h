@@ -8,91 +8,96 @@
 // Scrcpy Server Params
 struct ScrcpyParams {
     QString deviceSerial;
-    QString serverRemotePath;   // /data/local/tmp/scrcpy-server
-    QString serverVersion;      // 例如 "2.6"（与PC端匹配）
+    QString serverRemotePath = "/data/local/tmp/scrcpy-server";   // /data/local/tmp/scrcpy-server
+    QString serverVersion = "2.6";      // 例如 "2.6"（与PC端匹配）
     int     bitRate = 8'000'000;
     int     maxSize = 0;        // 0=不限制
     int     maxFps  = 0;        // 0=不限制
-    QString logLevel;           // "", "verbose", "debug", "info", "warn", "error"
+    QString logLevel = "info";           // "", "verbose", "debug", "info", "warn", "error"
     bool    control = true;
-    QString crop;               // "WxH:x:y" or ""
+    QString crop = "";               // "WxH:x:y" or ""
     bool    tunnelForward = false;
     bool    stayAwake = false;
-    QString codecOptions;       // 可空
-    QString encoderName;        // 可空
+    QString codecOptions = "";       // 可空
+    QString encoderName = "";        // 可空
     int     scid = -1;          // -1 让server默认
 };
 
 /*
- * Single Scrcpy Session !!! We have (ScrcpyService) to manage multiple sessions.
- * Manages a scrcpy server session for (a specific device) identified by its serial number.
- * Handles starting and stopping the scrcpy server process and emits signals for output and process termination.
+ * Single Scrcpy Session !!! Every device has its own ScrcpySession!!!.
+ * - starting and stopping the scrcpy server process 
+ * - handling (scrcpy server process) output and termination
  */
 class ScrcpySession : public QObject {
     Q_OBJECT
 public:
-    explicit ScrcpySession(const ScrcpyParams& p, QObject* parent=nullptr)
-        : QObject(parent), m(p), proc(new QProcess(this)) {
-        proc->setProcessChannelMode(QProcess::MergedChannels);
-        connect(proc, &QProcess::readyRead, this, [this]{
-            emit output(m.deviceSerial, proc->readAll());
+    explicit ScrcpySession(const ScrcpyParams& params, QObject* parent=nullptr)
+        : QObject(parent), m_params(params), m_process(new QProcess(this)) {
+        m_process->setProcessChannelMode(QProcess::MergedChannels);
+
+        // signals: read output from scrcpy process
+        connect(m_process, &QProcess::readyRead, this, [this]{
+            emit output(m_process->readAll());
         });
-        connect(proc, QOverload<int,QProcess::ExitStatus>::of(&QProcess::finished),
+
+        // signals: process termination
+        connect(m_process, QOverload<int,QProcess::ExitStatus>::of(&QProcess::finished),
                 this, [this](int code, QProcess::ExitStatus st){
-                    emit stopped(m.deviceSerial, code, st);
+                    emit stopped(code, st);
                 });
     }
 
     void startServer() {
-        if (proc->state() != QProcess::NotRunning) stopServer();
+        if (m_process->state() != QProcess::NotRunning) stopServer();
 
         QStringList args;
-        args << "-s" << m.deviceSerial
+        args << "-s" << m_params.deviceSerial
              << "shell"
-             << QString("CLASSPATH=%1").arg(m.serverRemotePath)
+             << QString("CLASSPATH=%1").arg(m_params.serverRemotePath)
              << "app_process" << "/" << "com.genymobile.scrcpy.Server";
 
         // —— 必要：版本（新 server 常用第一个位置参数是版本或配置起始位）——
-        if (!m.serverVersion.isEmpty()) args << m.serverVersion;
+        if (!m_params.serverVersion.isEmpty()) args << m_params.serverVersion;
 
         // —— 只加“用得上”的关键参数，避免过长 ——
-        args << QString("video_bit_rate=%1").arg(m.bitRate);
-        if (!m.logLevel.isEmpty())
-            args << QString("log_level=%1").arg(m.logLevel);
-        if (m.maxSize > 0)
-            args << QString("max_size=%1").arg(m.maxSize);
-        if (m.maxFps > 0)
-            args << QString("max_fps=%1").arg(m.maxFps);
-        if (!m.crop.isEmpty())
-            args << QString("crop=%1").arg(m.crop);
-        if (!m.control)
+        args << QString("video_bit_rate=%1").arg(m_params.bitRate);
+        if (!m_params.logLevel.isEmpty())
+            args << QString("log_level=%1").arg(m_params.logLevel);
+        if (m_params.maxSize > 0)
+            args << QString("max_size=%1").arg(m_params.maxSize);
+        if (m_params.maxFps > 0)
+            args << QString("max_fps=%1").arg(m_params.maxFps);
+        if (!m_params.crop.isEmpty())
+            args << QString("crop=%1").arg(m_params.crop);
+        if (!m_params.control)
             args << "control=false";
-        if (m.tunnelForward)
+        if (m_params.tunnelForward)
             args << "tunnel_forward=true";
-        if (m.stayAwake)
+        if (m_params.stayAwake)
             args << "stay_awake=true";
-        if (!m.codecOptions.isEmpty())
-            args << QString("codec_options=%1").arg(m.codecOptions);
-        if (!m.encoderName.isEmpty())
-            args << QString("encoder_name=%1").arg(m.encoderName);
-        if (m.scid != -1)
-            args << QString("scid=%1").arg(m.scid, 8, 16, QChar('0'));
+        if (!m_params.codecOptions.isEmpty())
+            args << QString("codec_options=%1").arg(m_params.codecOptions);
+        if (!m_params.encoderName.isEmpty())
+            args << QString("encoder_name=%1").arg(m_params.encoderName);
+        if (m_params.scid != -1)
+            args << QString("scid=%1").arg(m_params.scid, 8, 16, QChar('0'));
 
-        proc->start("adb", args);
+        // TODO: adb path
+        m_process->start("adb", args);
     }
 
     void stopServer() {
-        if (proc->state() != QProcess::NotRunning) proc->kill();
-        proc->waitForFinished(2000);
+        if (m_process->state() != QProcess::NotRunning) m_process->kill();
+        m_process->waitForFinished(2000);
     }
 
 signals:
-    void output(const QString& deviceSerial, const QByteArray& data);
-    void stopped(const QString& deviceSerial, int exitCode, QProcess::ExitStatus st);
+    void output(const QByteArray& data);
+    void stopped(int exitCode, QProcess::ExitStatus st);
 
 private:
-    ScrcpyParams m;
-    QProcess* proc;
+    ScrcpyParams m_params;
+    QProcess* m_process;
 };
 
 #endif // SCRCPYSESSION_H

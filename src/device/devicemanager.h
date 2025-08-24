@@ -24,12 +24,13 @@ private:
 public:
     DeviceManager(QObject *parent = nullptr);
     QList<Device*> getDevices() const { return m_devices; }
+    Q_INVOKABLE void addDevices(QStringList deviceSerials);
+
 
 signals:
     void devicesChanged();
 
 public slots:
-    void addDevices(QStringList deviceSerials);
 };
 
 #endif // DEVICEMANAGER_H

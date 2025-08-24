@@ -30,6 +30,7 @@ qt_add_qml_module(appMobileFarm
     QML_FILES
         src/qml/Main.qml
         src/qml/DeviceScanDialog.qml
+        src/qml/DeviceList.qml
     SOURCES
         src/device/devicescanner.h
         src/device/devicescanner.cpp
@@ -45,7 +46,6 @@ target_sources(appMobileFarm PRIVATE
     src/device/devicescanner.h src/device/devicescanner.cpp
 # scrcpy
     src/scrcpy/scrcpysession.h src/scrcpy/scrcpysession.cpp
-    src/scrcpy/scrcpyservice.h src/scrcpy/scrcpyservice.cpp
 # adb
     src/adb/adbrunner.h src/adb/adbrunner.cpp
 )

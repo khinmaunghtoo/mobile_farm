@@ -37,33 +37,8 @@ ApplicationWindow {
         orientation: Qt.Horizontal
 
         // Left panel
-        Rectangle {
-            id: leftPanel
-            SplitView.preferredWidth: parent.width * 0.3
-            SplitView.minimumWidth: 100
-            color: "#2b2b2b"
-
-            // no devices label
-            Text {
-                anchors.centerIn: parent
-                text: qsTr("No Devices")
-                color: "white"
-                visible: deviceManager.devices.length === 0
-            }
-
-            // device list
-            ListView {
-                id: deviceListView
-                anchors.fill: parent
-                anchors.margins: 10
-                model: deviceManager.devices
-                delegate: Text {
-                    text: modelData.serial
-                    color: "white"
-                    font.pixelSize: 14
-                    padding: 5
-                }
-            }
+        DeviceList {
+            deviceManager: deviceManager
         }
 
         // Right panel
