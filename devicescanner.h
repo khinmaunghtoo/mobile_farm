@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QtQml/qqmlregistration.h>   // 用这个头
 #include <QThreadPool>
-#include "adb/adbrunner.h"
+#include "adbrunner.h"
 
 
 /*
