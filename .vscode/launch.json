@@ -1,0 +1,102 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Qt: Debug C++",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "visualizerFile": "/Users/duanhuasheng/Library/Application Support/Windsurf/User/workspaceStorage/c80e6ae12cdacf7981ff2a7892b39fdd/tonka3000.qtvsctools/qt.natvis.xml",
+            "showDisplayString": true,
+            "environment": [
+                {
+                    "name": "CMAKE_PREFIX_PATH",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1"
+                },
+                {
+                    "name": "Qt6_DIR",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6"
+                }
+            ],
+            "osx": {
+                "MIMode": "lldb",
+                "environment": [
+                    {
+                        "name": "PATH",
+                        "value": "/opt/homebrew/Cellar/qt/6.9.1/bin:${env:PATH}"
+                    },
+                    {
+                        "name": "DYLD_FRAMEWORK_PATH",
+                        "value": "/opt/homebrew/Cellar/qt/6.9.1/lib"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Qt: QML Debug",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "Qt: Acquire Port"
+        },
+        {
+            "name": "Qt: Debug (C++ and QML)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "visualizerFile": "/Users/duanhuasheng/Library/Application Support/Windsurf/User/workspaceStorage/c80e6ae12cdacf7981ff2a7892b39fdd/tonka3000.qtvsctools/qt.natvis.xml",
+            "showDisplayString": true,
+            "args": [
+                "-qmljsdebugger=host:localhost,port:9229,block,services:DebugMessages,QmlDebugger,V8Debugger"
+            ],
+            "environment": [
+                {
+                    "name": "CMAKE_PREFIX_PATH",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1"
+                },
+                {
+                    "name": "Qt6_DIR",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6"
+                },
+                {
+                    "name": "QML_IMPORT_PATH",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1/qml"
+                },
+                {
+                    "name": "QT_PLUGIN_PATH",
+                    "value": "/opt/homebrew/Cellar/qt/6.9.1/plugins"
+                }
+            ],
+            "osx": {
+                "MIMode": "lldb",
+                "environment": [
+                    {
+                        "name": "PATH",
+                        "value": "/opt/homebrew/Cellar/qt/6.9.1/bin:${env:PATH}"
+                    },
+                    {
+                        "name": "DYLD_FRAMEWORK_PATH",
+                        "value": "/opt/homebrew/Cellar/qt/6.9.1/lib"
+                    }
+                ]
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Qt: Full Debug (C++ + QML)",
+            "configurations": [
+                "Qt: Debug C++",
+                "Qt: QML Debug"
+            ],
+            "preLaunchTask": "Qt: Acquire Port",
+            "stopAll": true
+        }
+    ]
+}

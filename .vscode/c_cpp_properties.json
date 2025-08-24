@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/**",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtCore.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtGui.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtWidgets.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtQml.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtQuick.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/QtQuickControls2.framework/Headers",
+                "/opt/homebrew/Cellar/qt/6.9.1/lib/**",
+                "/opt/homebrew/Cellar/qt/6.9.1/include/**"
+            ],
+            "defines": [
+                "QT_QML_DEBUG",
+                "QT_QUICK_LIB",
+                "QT_QML_LIB",
+                "QT_GUI_LIB",
+                "QT_CORE_LIB"
+            ],
+            "macFrameworkPath": [
+                "/opt/homebrew/Cellar/qt/6.9.1/lib"
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

@@ -6,12 +6,11 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    QQuickStyle::setStyle("Fusion"); // 或 "Material"、"Fusion" 等
+    QQuickStyle::setStyle("Fusion");
 
 
     QQmlApplicationEngine engine;
 
-    // 注意：路径应该是 qrc:/MobileFarm/src/qml/Main.qml
     const QUrl url(QStringLiteral("qrc:/MobileFarm/src/qml/Main.qml"));
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,
