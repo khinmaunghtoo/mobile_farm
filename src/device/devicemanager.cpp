@@ -3,7 +3,8 @@
 DeviceManager::DeviceManager(QObject *parent) : QObject(parent) {}
 
 
-void DeviceManager::addDevices(QList<Device*> devices) {
-    this->m_devices = devices;
-    emit devicesChanged();
+void DeviceManager::addDevices(QStringList deviceSerials) {
+    qDebug() << "addDevices" << deviceSerials;;
+    // this->m_devices = devices;
+    // emit devicesChanged();
 }

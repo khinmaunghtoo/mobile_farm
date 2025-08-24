@@ -5,6 +5,7 @@
 #include <QList>
 #include <QObject>
 #include <QtQml/qqmlregistration.h>
+#include <QDebug>
 
 /*
  * DeviceManager
@@ -29,7 +30,7 @@ signals:
     void devicesChanged();
 
 public slots:
-    void addDevices(QList<Device*> devices);
+    void addDevices(QStringList deviceSerials);
 };
 
 #endif // DEVICEMANAGER_H

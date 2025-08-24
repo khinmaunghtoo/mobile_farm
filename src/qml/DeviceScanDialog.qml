@@ -129,15 +129,18 @@ Dialog {
             delegate: CheckBox {
                 checked: false
                 onCheckedChanged: {
-                    // TODO: handle device selection
                     // if !checked, selectAll should be false, but, when selectAll change to false , should not effect other checkboxes.
                     if (!checked) {
-                        dontEffectAllCheckBox = true;
+                        deviceScanDialog.dontEffectAllCheckBox = true;
                         deviceScanDialog.selectAll = false;
                         // remove device from selectedDevices
-                        selectedDevices = selectedDevices.filter(function(value) {
+                        deviceScanDialog.selectedDevices = deviceScanDialog.selectedDevices.filter(function(value) {
                             return value !== modelData;
                         });
+                    }
+
+                    if (checked) {
+                        deviceScanDialog.selectedDevices.push(modelData);
                     }
                 }
                 text: modelData
@@ -160,6 +163,12 @@ Dialog {
                     color: "green"
                 }
                 onClicked: {
+                    if (deviceScanDialog.selectedDevices.length === 0) { 
+                        errorDialog.text = "No devices selected";
+                        errorDialog.open();
+                        return 
+                    }
+                    deviceManager.addDevices(deviceScanDialog.selectedDevices);
                 }
             }
 
