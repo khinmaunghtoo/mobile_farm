@@ -32,6 +32,10 @@ qt_add_qml_module(appMobileFarm
     SOURCES
         src/device/devicescanner.h
         src/device/devicescanner.cpp
+        src/device/devicemanager.h
+        src/device/devicemanager.cpp
+        src/device/device.h
+        src/device/device.cpp
 )
 
 # 纯 C++ 业务源码

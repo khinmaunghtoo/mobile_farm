@@ -28,7 +28,7 @@ Dialog {
     }
 
     onOpened: {
-        deviceScanner.scan();
+        deviceScanner.scan(); // scan devices when dialog openned
     }
     title: qsTr("Scan Devices")
     width: 450
@@ -152,9 +152,9 @@ Dialog {
             anchors.fill: parent
             anchors.margins: 12
 
-            // Connect Devices Button
+            // Add Devices Button
             Button {
-                text: qsTr("Connect Devices")
+                text: qsTr("Add Devices")
                 background: Rectangle {
                     radius: 6
                     color: "green"
@@ -203,5 +203,9 @@ Dialog {
             errorDialog.text = message;
             errorDialog.open();
         }
+    }
+
+    DeviceManager {
+        id: deviceManager
     }
 }

@@ -8,7 +8,7 @@ ApplicationWindow {
     visible: true
     title: qsTr("Phone Farms")
     
-
+    // menuBar
     menuBar: MenuBar {
         background: Rectangle {
             color: "#2b2b2b"

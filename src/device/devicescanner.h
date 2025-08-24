@@ -2,7 +2,7 @@
 #define DEVICESCANNER_H
 
 #include <QObject>
-#include <QtQml/qqmlregistration.h>   // 用这个头
+#include <QtQml/qqmlregistration.h>
 #include <QThreadPool>
 #include "adbrunner.h"
 

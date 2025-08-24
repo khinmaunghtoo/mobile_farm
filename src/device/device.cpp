@@ -1,3 +1,3 @@
 #include "device.h"
 
-Device::Device() {}
+Device::Device(QObject *parent) : QObject(parent) {}
