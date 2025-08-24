@@ -15,6 +15,13 @@ qt_add_executable(appMobileFarm
     main.cpp
 )
 
+# ---- 包含目录 ----
+target_include_directories(appMobileFarm PRIVATE 
+    src/device
+    src/scrcpy
+    src/adb
+)
+
 # ---- QML 模块 ----
 qt_add_qml_module(appMobileFarm
     URI MobileFarm
@@ -23,17 +30,21 @@ qt_add_qml_module(appMobileFarm
         Main.qml
         DeviceScanDialog.qml
     SOURCES
-        devicescanner.h
-        devicescanner.cpp
+        src/device/devicescanner.h
+        src/device/devicescanner.cpp
 )
 
 # 纯 C++ 业务源码
 target_sources(appMobileFarm PRIVATE
-    device.h device.cpp
-    devicemanager.h devicemanager.cpp
-    scrcpysession.h scrcpysession.cpp
-    scrcpyservice.h scrcpyservice.cpp
-    adbrunner.h adbrunner.cpp
+# device
+    src/device/device.h src/device/device.cpp
+    src/device/devicemanager.h src/device/devicemanager.cpp
+    src/device/devicescanner.h src/device/devicescanner.cpp
+# scrcpy
+    src/scrcpy/scrcpysession.h src/scrcpy/scrcpysession.cpp
+    src/scrcpy/scrcpyservice.h src/scrcpy/scrcpyservice.cpp
+# adb
+    src/adb/adbrunner.h src/adb/adbrunner.cpp
 )
 
 # ---- 链接依赖 ----
