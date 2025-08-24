@@ -1,4 +1,3 @@
-// main.cpp 应该是这样的
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
