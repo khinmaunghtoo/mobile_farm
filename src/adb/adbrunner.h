@@ -16,13 +16,6 @@ public:
     ADBRunner() = delete;
     ~ADBRunner() = delete;
 
-
-    // Get ADB path
-    static QString adbPath();
-
-    // Get scrcpy-server file path
-    static QString scrcpyServerPath();
-
     // Scan for connected devices
     static QStringList scanDevices();
 

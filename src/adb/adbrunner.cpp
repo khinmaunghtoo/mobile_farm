@@ -2,32 +2,11 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <qprocess.h>
+#include <src/config/appconfig.h>
 
 
 QStringList parseDeviceList(const QString &output);
 
-
-QString ADBRunner::adbPath() {
-    QString base = QCoreApplication::applicationDirPath();
-    QString path;
-
-#if defined(Q_OS_WIN)
-    path = QDir(base).filePath("third_party/adb/win/adb.exe");
-#elif defined(Q_OS_MACOS)
-    path = QDir(base).filePath("third_party/adb/mac/adb");
-#elif defined(Q_OS_LINUX)
-    path = QDir(base).filePath("third_party/adb/linux/adb");
-#else
-    path = "adb";  // fallback，假设系统 PATH 有 adb
-#endif
-
-    return path;
-}
-
-QString ADBRunner::scrcpyServerPath() {
-    QString base = QCoreApplication::applicationDirPath();
-    return QDir(base).filePath("third_party/scrcpy-server");
-}
 
 
 QStringList ADBRunner::scanDevices() noexcept(false)
@@ -101,7 +80,7 @@ void ADBRunner::forward(const QString &deviceSerial,
 QString ADBRunner::executeADBCommand(const QStringList &args)
 {
     QProcess process;
-    process.start(adbPath(), args);
+    process.start(AppConfig::adbPath(), args);
 
     if (!process.waitForStarted(5000))
         return QString("[error] failed to start adb: %1").arg(process.errorString());
