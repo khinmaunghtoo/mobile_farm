@@ -10,9 +10,18 @@
 class Device: public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
+    Q_PROPERTY(QString serial READ getSerial CONSTANT)
 public:
-    Device(QObject *parent = nullptr);
+    Device(QObject *parent = nullptr, QString serial = "");
+
+    QString getSerial() const { return m_serial; }
+
+private:
+    // device serial number
+    QString m_serial;
+
+signals:
+
 };
 
 #endif // DEVICE_H

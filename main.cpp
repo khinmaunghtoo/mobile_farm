@@ -1,6 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
+#include "src/device/devicemanager.h"
+#include "src/device/devicescanner.h"
+#include "src/device/device.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,6 +13,11 @@ int main(int argc, char *argv[])
 
 
     QQmlApplicationEngine engine;
+
+    // 注册QML类型
+    qmlRegisterType<DeviceScanner>("MobileFarm", 1, 0, "DeviceScanner");
+    qmlRegisterType<DeviceManager>("MobileFarm", 1, 0, "DeviceManager");
+    qmlRegisterType<Device>("MobileFarm", 1, 0, "Device");
 
     const QUrl url(QStringLiteral("qrc:/MobileFarm/src/qml/Main.qml"));
 

@@ -17,7 +17,6 @@
 class DeviceManager : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
     Q_PROPERTY(QList<Device*> devices READ getDevices NOTIFY devicesChanged)
 private:
     // devices

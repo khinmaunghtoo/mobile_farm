@@ -7,8 +7,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+
 # 必须包含 Qml
-find_package(Qt6 6.8 REQUIRED COMPONENTS Qml Quick QuickControls2)
+find_package(Qt6 6.9 REQUIRED COMPONENTS Qml Quick QuickControls2)
 
 # ---- 可执行程序 ----
 qt_add_executable(appMobileFarm
@@ -34,8 +35,6 @@ qt_add_qml_module(appMobileFarm
         src/device/devicescanner.cpp
         src/device/devicemanager.h
         src/device/devicemanager.cpp
-        src/device/device.h
-        src/device/device.cpp
 )
 
 # 纯 C++ 业务源码
@@ -82,5 +81,3 @@ install(TARGETS appMobileFarm
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-

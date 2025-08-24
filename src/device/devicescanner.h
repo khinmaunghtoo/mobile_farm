@@ -14,7 +14,6 @@
 class DeviceScanner : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
     Q_PROPERTY(bool isScanning READ isScanning WRITE setIsScanning NOTIFY isScanningChanged)
     Q_PROPERTY(QStringList devices READ devices WRITE setDevices NOTIFY devicesChanged)
 

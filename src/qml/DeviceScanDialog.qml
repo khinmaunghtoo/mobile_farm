@@ -12,6 +12,10 @@ Dialog {
     property bool dontEffectAllCheckBox: false
     property var selectedDevices: []
 
+    // 外部传进来的 DeviceManager
+    property var deviceManager
+
+
     onSelectAllChanged: {
         if (dontEffectAllCheckBox) { return }
         for (var i = 0; i < deviceListView.count; i++) {
@@ -168,7 +172,8 @@ Dialog {
                         errorDialog.open();
                         return 
                     }
-                    deviceManager.addDevices(deviceScanDialog.selectedDevices);
+                    deviceScanDialog.deviceManager.addDevices(deviceScanDialog.selectedDevices);
+                    deviceScanDialog.close();
                 }
             }
 
@@ -214,7 +219,4 @@ Dialog {
         }
     }
 
-    DeviceManager {
-        id: deviceManager
-    }
 }

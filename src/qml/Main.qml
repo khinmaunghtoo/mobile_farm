@@ -1,12 +1,18 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Window
+import MobileFarm 1.0
 
 ApplicationWindow {
+    id: mainWindow
     width: 1024
     height: 768
     visible: true
     title: qsTr("Phone Farms")
+
+    DeviceManager {
+        id: deviceManager
+    }
     
     // menuBar
     menuBar: MenuBar {
@@ -37,10 +43,26 @@ ApplicationWindow {
             SplitView.minimumWidth: 100
             color: "#2b2b2b"
 
+            // no devices label
             Text {
                 anchors.centerIn: parent
                 text: qsTr("No Devices")
                 color: "white"
+                visible: deviceManager.devices.length === 0
+            }
+
+            // device list
+            ListView {
+                id: deviceListView
+                anchors.fill: parent
+                anchors.margins: 10
+                model: deviceManager.devices
+                delegate: Text {
+                    text: modelData.serial
+                    color: "white"
+                    font.pixelSize: 14
+                    padding: 5
+                }
             }
         }
 
@@ -64,5 +86,6 @@ ApplicationWindow {
     // Device Scan Dialog
     DeviceScanDialog {
         id: deviceScanDialog
+        deviceManager: deviceManager
     }
 }
