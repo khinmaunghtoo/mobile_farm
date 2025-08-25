@@ -82,6 +82,8 @@
         "tuple": "cpp",
         "iterator": "cpp",
         "utility": "cpp",
-        "qstring": "cpp"
+        "qstring": "cpp",
+        "version": "cpp",
+        "qtcpserver": "cpp"
     }
 }

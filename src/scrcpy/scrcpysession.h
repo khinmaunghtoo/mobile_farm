@@ -4,39 +4,10 @@
 #include <QObject>
 #include <QProcess>
 #include <QRandomGenerator>
+#include "scrcpyparams.h"
 
-/*
-   Scrcpy Server Params
-   some args are optional, we use default values
-   so, they are not shown in the struct
-    - codecOptions
-    - encoderName
-    - crop
-*/ 
-struct ScrcpyParams
-{
-    QString deviceSerial;
-    const QString serverRemotePath = "/data/local/tmp/scrcpy-server.jar"; // /data/local/tmp/scrcpy-server.jar
-    const QString serverVersion = "3.3.1"; // current scrcpy-server version 3.3.1
-    const QString logLevel = "info"; // "", "verbose", "debug", "info", "warn", "error"
-    int bitRate = 2000000; // 2Mbps
-    int maxSize = 0;           // 0 = original size
-    int maxFps = 0;            // 0 = original fps
-    bool control = true;
-    bool tunnelReverse = true; // from 3.0, tunnel reverse is the default
-    bool stayAwake = true;
-
-    // device socket name for forwarding, example: scrcpy_12345678
-    QString forwardSocketName = "";  
-    
-    // this value will be generated in ScrcpySession constructor
-    quint16 tcpPort = 0;        // local TCP port for forwarding
-
-    // generate our own random scid in stead of using the default scid (-1)
-    // then we can use it to identify the scrcpy server process
-    const int scid = QRandomGenerator::global()->generate() & 0x7FFFFFFF;
-
-};
+#include <QTcpServer>
+#include <QTcpSocket>
 
 /*
  * Single Scrcpy Session !!! Every device has its own ScrcpySession!!!.
@@ -50,17 +21,24 @@ public:
     explicit ScrcpySession(const ScrcpyParams &params, QObject *parent = nullptr);
     ~ScrcpySession();
 
-    void start();
+    void startScrcpyServer();
 
-    void stop();
+    void stopProcess();
 
 signals:
     void output(const QByteArray &data);
     void stopped(int exitCode, QProcess::ExitStatus st);
+    void videoData(const QByteArray &data);
 
 private:
     ScrcpyParams m_scrcpyParams;
     QProcess *m_process;
+
+    // used for video stream (device screen -> pc)
+    QTcpServer *m_videoSocket;
+
+    // used for control (pc control -> device)
+    QTcpSocket *m_controlSocket;
 };
 
 #endif // SCRCPYSESSION_H

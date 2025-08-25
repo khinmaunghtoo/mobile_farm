@@ -4,12 +4,13 @@
 #include "adbrunner.h"
 
 ScrcpySession::ScrcpySession(const ScrcpyParams &params, QObject *parent)
-    : QObject(parent), m_scrcpyParams(params), m_process(new QProcess(this))
+    : QObject(parent), m_scrcpyParams(params), m_process(new QProcess(this)),
+      m_videoSocket(new QTcpServer(this)), m_controlSocket(nullptr)
 {
 
     m_process->setProcessChannelMode(QProcess::MergedChannels);
 
-    // signals: read output from scrcpy process
+    // signals: read output after we start()
     connect(m_process, &QProcess::readyRead, this, [this]
             { emit output(m_process->readAll()); });
 
@@ -17,14 +18,35 @@ ScrcpySession::ScrcpySession(const ScrcpyParams &params, QObject *parent)
     connect(m_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             this, [this](int code, QProcess::ExitStatus st)
             { emit stopped(code, st); });
+
+    // setup video server connection handling
+    connect(m_videoSocket, &QTcpServer::newConnection, this, [this]() {
+        QTcpSocket *clientSocket = m_videoSocket->nextPendingConnection();
+        if (clientSocket) {
+            qDebug() << "Scrcpy server connected for video stream";
+            
+            // handle incoming video data
+            connect(clientSocket, &QTcpSocket::readyRead, this, [this, clientSocket]() {
+                QByteArray data = clientSocket->readAll();
+                if (!data.isEmpty()) {
+                    emit videoData(data);
+                }
+            });
+            
+            // handle disconnection
+            connect(clientSocket, &QTcpSocket::disconnected, this, [this]() {
+                qDebug() << "Scrcpy server disconnected from video stream";
+            });
+        }
+    });
 }
 
 ScrcpySession::~ScrcpySession()
 {
-    stop();
+    stopProcess();
 }
 
-void ScrcpySession::start()
+void ScrcpySession::startScrcpyServer()
 {
 
     // push scrcpy server to device
@@ -40,12 +62,20 @@ void ScrcpySession::start()
     // setup port forwarding for video stream
     // Try reverse tunnel first (scrcpy 3.x default), fallback to forward if needed
     if (!ADBRunner::reverse(m_scrcpyParams.deviceSerial, 
-                           m_scrcpyParams.forwardSocketName, 
+                           m_scrcpyParams.socketName, 
                            m_scrcpyParams.tcpPort))
     {
         emit stopped(-1, QProcess::CrashExit);
         return;
     }
+
+    // start TCP server to listen for video stream connections
+    if (!m_videoSocket->listen(QHostAddress::LocalHost, m_scrcpyParams.tcpPort)) {
+        qDebug() << "Failed to start video TCP server on port" << m_scrcpyParams.tcpPort;
+        emit stopped(-1, QProcess::CrashExit);
+        return;
+    }
+    qDebug() << "Video TCP server listening on port" << m_scrcpyParams.tcpPort;
 
     // here we dont use ADBRunner, because scrcpy server is not a simple command
     // but a long-running process that streams video data continuously.
@@ -88,8 +118,14 @@ void ScrcpySession::start()
 }
 
 // stop scrcpy server process
-void ScrcpySession::stop()
+void ScrcpySession::stopProcess()
 {
+    // close TCP server
+    if (m_videoSocket && m_videoSocket->isListening()) {
+        m_videoSocket->close();
+        qDebug() << "Video TCP server stopped";
+    }
+    
     if (m_process->state() != QProcess::NotRunning)
         m_process->kill();
     m_process->waitForFinished(2000);

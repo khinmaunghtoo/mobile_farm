@@ -33,6 +33,7 @@ private:
 private slots:
     void handleScrcpySessionOutput(const QByteArray& data);
     void handleScrcpySessionStopped(int exitCode, QProcess::ExitStatus st);
+    void handleVideoStream(const QByteArray& data);
 
 signals:
     void runningChanged();
