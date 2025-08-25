@@ -43,14 +43,8 @@ void ScrcpySession::start()
                            m_scrcpyParams.forwardSocketName, 
                            m_scrcpyParams.tcpPort))
     {
-        qDebug() << "Reverse tunnel failed, trying forward tunnel...";
-        if (!ADBRunner::forward(m_scrcpyParams.deviceSerial, 
-                               m_scrcpyParams.forwardSocketName, 
-                               m_scrcpyParams.tcpPort))
-        {
-            emit stopped(-1, QProcess::CrashExit);
-            return;
-        }
+        emit stopped(-1, QProcess::CrashExit);
+        return;
     }
 
     // here we dont use ADBRunner, because scrcpy server is not a simple command
