@@ -33,7 +33,8 @@ Rectangle {
             padding: 5
 
             property var device: modelData
-            
+
+            // device serial
             Text {
                 text: device.serial
                 color: "white"
@@ -41,6 +42,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
             }
             
+            // start/stop scrcpy server button
             Button {
                 text: device.running ? "⏹" : "▶"
                 width: 20
@@ -58,6 +60,7 @@ Rectangle {
                     }
                 }
             }
+
         }
     }
 }

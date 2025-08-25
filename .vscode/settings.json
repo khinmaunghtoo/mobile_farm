@@ -77,6 +77,11 @@
         "numeric": "cpp",
         "format": "cpp",
         "span": "cpp",
-        "qdir": "cpp"
+        "qdir": "cpp",
+        "__config": "cpp",
+        "tuple": "cpp",
+        "iterator": "cpp",
+        "utility": "cpp",
+        "qstring": "cpp"
     }
 }

@@ -22,14 +22,21 @@ public:
     // Push file to device
     static bool push(const QString& serial, const QString& localPath, const QString& remotePath);
 
-    // reverse
-    static void reverse(const QString &serial, const QString &deviceSocketName, quint16 localPort);
-
     // forward
-    static void forward(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+    static bool forward(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+    // remove forward
+    static bool removeForward(const QString &serial, quint16 localPort);
+    // remove forward by socket name
+    static bool removeForwardBySocketName(const QString &serial, const QString &deviceSocketName);
+    
 
-    // start scrcpy
-    static void startScrcpyServer(const QString &serial);
+    // reverse
+    static bool reverse(const QString &serial, const QString &deviceSocketName, quint16 localPort);
+    // remove reverse
+    static bool removeReverse(const QString &serial, quint16 localPort);
+    // remove reverse by socket name
+    static bool removeReverseBySocketName(const QString &serial, const QString &deviceSocketName);
+
 
 
 private:

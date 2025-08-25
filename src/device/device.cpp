@@ -26,6 +26,16 @@ void Device::startScrcpySession() {
     ScrcpyParams params;
     params.deviceSerial = m_serial;
 
+    // auto assign a unique port starting from 27183
+    if (params.tcpPort == 0) {
+        static quint16 nextPort = 27183;
+        params.tcpPort = nextPort++;
+        qDebug() << "Auto-assigned port" << params.tcpPort << "for device" << params.deviceSerial;
+    }
+
+    // update socket name with scid for unique identification
+    params.forwardSocketName = QString("scrcpy_%1").arg(params.scid, 8, 16, QChar('0'));
+
     // create scrcpy session and connect signals
     m_scrcpySession = new ScrcpySession(params, this);
     connect(m_scrcpySession, &ScrcpySession::output, this, &Device::handleScrcpySessionOutput);
@@ -35,7 +45,6 @@ void Device::startScrcpySession() {
     m_scrcpySession->start();
     emit runningChanged();
 
-    qDebug() << "Scrcpy started for device:" << m_serial;
 }
     
 // stop scrcpy session

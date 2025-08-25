@@ -1,9 +1,12 @@
 #include "scrcpysession.h"
 #include <src/config/appconfig.h>
+#include <QProcess>
+#include "adbrunner.h"
 
 ScrcpySession::ScrcpySession(const ScrcpyParams &params, QObject *parent)
-    : QObject(parent), m_params(params), m_process(new QProcess(this))
+    : QObject(parent), m_scrcpyParams(params), m_process(new QProcess(this))
 {
+
     m_process->setProcessChannelMode(QProcess::MergedChannels);
 
     // signals: read output from scrcpy process
@@ -16,55 +19,83 @@ ScrcpySession::ScrcpySession(const ScrcpyParams &params, QObject *parent)
             { emit stopped(code, st); });
 }
 
-ScrcpySession::~ScrcpySession() {
+ScrcpySession::~ScrcpySession()
+{
     stop();
 }
 
 void ScrcpySession::start()
 {
-    if (m_process->state() != QProcess::NotRunning)
-        stop();
 
+    // push scrcpy server to device
+    if (!ADBRunner::push(
+            m_scrcpyParams.deviceSerial,
+            AppConfig::scrcpyServerPath(),
+            m_scrcpyParams.serverRemotePath))
+    {
+        emit stopped(-1, QProcess::CrashExit);
+        return;
+    }
+
+    // setup port forwarding for video stream
+    // Try reverse tunnel first (scrcpy 3.x default), fallback to forward if needed
+    if (!ADBRunner::reverse(m_scrcpyParams.deviceSerial, 
+                           m_scrcpyParams.forwardSocketName, 
+                           m_scrcpyParams.tcpPort))
+    {
+        qDebug() << "Reverse tunnel failed, trying forward tunnel...";
+        if (!ADBRunner::forward(m_scrcpyParams.deviceSerial, 
+                               m_scrcpyParams.forwardSocketName, 
+                               m_scrcpyParams.tcpPort))
+        {
+            emit stopped(-1, QProcess::CrashExit);
+            return;
+        }
+    }
+
+    // here we dont use ADBRunner, because scrcpy server is not a simple command
+    // but a long-running process that streams video data continuously.
+    // ADBRunner is designed for one-shot commands that return and exit,
+    // while scrcpy server needs persistent connection and async data handling.
     QStringList args;
-    args << "-s" << m_params.deviceSerial
+    args << "-s" << m_scrcpyParams.deviceSerial
          << "shell"
-         << QString("CLASSPATH=%1").arg(m_params.serverRemotePath)
+         << QString("CLASSPATH=%1").arg(m_scrcpyParams.serverRemotePath)
          << "app_process" << "/" << "com.genymobile.scrcpy.Server";
 
-    // —— 必要：版本（新 server 常用第一个位置参数是版本或配置起始位）——
-    if (!m_params.serverVersion.isEmpty())
-        args << m_params.serverVersion;
+    // server version
+    args << m_scrcpyParams.serverVersion;
 
-    // —— 只加“用得上”的关键参数，避免过长 ——
-    args << QString("video_bit_rate=%1").arg(m_params.bitRate);
-    if (!m_params.logLevel.isEmpty())
-        args << QString("log_level=%1").arg(m_params.logLevel);
-    if (m_params.maxSize > 0)
-        args << QString("max_size=%1").arg(m_params.maxSize);
-    if (m_params.maxFps > 0)
-        args << QString("max_fps=%1").arg(m_params.maxFps);
-    if (!m_params.crop.isEmpty())
-        args << QString("crop=%1").arg(m_params.crop);
-    if (!m_params.control)
-        args << "control=false";
-    if (m_params.tunnelForward)
-        args << "tunnel_forward=true";
-    if (m_params.stayAwake)
-        args << "stay_awake=true";
-    if (!m_params.codecOptions.isEmpty())
-        args << QString("codec_options=%1").arg(m_params.codecOptions);
-    if (!m_params.encoderName.isEmpty())
-        args << QString("encoder_name=%1").arg(m_params.encoderName);
-    if (m_params.scid != -1)
-        args << QString("scid=%1").arg(m_params.scid, 8, 16, QChar('0'));
+    // bit rate
+    args << QString("video_bit_rate=%1").arg(m_scrcpyParams.bitRate);
+
+    // scrcpy server log level 
+    args << QString("log_level=%1").arg(m_scrcpyParams.logLevel);
+
+    // max size
+    if (m_scrcpyParams.maxSize > 0)
+        args << QString("max_size=%1").arg(m_scrcpyParams.maxSize);
+
+    // max fps
+    if (m_scrcpyParams.maxFps > 0)
+        args << QString("max_fps=%1").arg(m_scrcpyParams.maxFps);
+
+    // control
+    args << QString("control=%1").arg(m_scrcpyParams.control);
+
+    // stay awake
+    args << QString("stay_awake=%1").arg(m_scrcpyParams.stayAwake);
+
+    // scid - must match the socket name used in forward
+    args << QString("scid=%1").arg(m_scrcpyParams.scid, 8, 16, QChar('0'));
 
     // TODO: adb path
     m_process->start(AppConfig::adbPath(), args);
 }
 
-
 // stop scrcpy server process
-void ScrcpySession::stop() {
+void ScrcpySession::stop()
+{
     if (m_process->state() != QProcess::NotRunning)
         m_process->kill();
     m_process->waitForFinished(2000);
